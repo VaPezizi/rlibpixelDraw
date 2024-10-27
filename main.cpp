@@ -56,8 +56,8 @@ class Grid{
 protected:
 	raylib::Vector2 size;		//Size just means window size
 	raylib::Vector2 XY;		//XY has amount of pixels per row in X, and amount of rows on Y
-	Pixel * tiles;	//Position of tiles
 	int Amount;
+	Pixel * tiles;	//Position of tiles
 public:
 	Grid(int sizeX, int sizeY){
 		size = (Vector2) {(float) sizeX,(float) sizeY};
@@ -74,7 +74,7 @@ public:
 				int index = (i * X) + j;
 				tiles[index].setPos(raylib::Vector2((float) j * sizeX / X, (float) i * sizeY / Y));
 				tiles[index].setSize(raylib::Vector2((float) size.x / XY.x, (float)size.y / XY.y));
-				tiles[index].setRectangle(raylib::Rectangle(size.x/XY.x, size.y / XY.y, tiles[index].getPos().GetX(), tiles[index].getPos().GetY()));
+				tiles[index].setRectangle(raylib::Rectangle(tiles[index].getPos().GetX(), tiles[index].getPos().GetY(),size.x/XY.x, size.y / XY.y));
 
 
 				//tiles[index].SetX((float)j * sizeX / X);	//I * amount of pixels per row + position in current row
@@ -83,24 +83,30 @@ public:
 			}
 		}
 	}
-	void drawGrid(){
-		for(int i = 0;i < Amount; i++){
-			DrawRectangleLines((int)tiles[i].getPos().GetX(), (int) tiles[i].getPos().GetY(), size.x / XY.x, size.y / XY.y, RED);
-		}
-	}
+
+	
 	void DestroyGrid(){
 		delete[] tiles;
 	}
 	int getAmount(){
 		return Amount;
 	}
-
+	Pixel * getPixel(int index){
+		return &this->tiles[index];
+	}
 	//For debugging !!
 	void printSome(){
 		for(int i = 0; i < Amount;i++){
 			std::cout << "Index: " << i << " X: " << tiles[i].getPos().GetX() << " Y: " << tiles[i].getPos().GetY() << std::endl;
 		}
 
+	}
+
+	void drawGrid(){
+		for(int i = 0;i < Amount; i++){
+			//DrawRectangleLines((int)tiles[i].getPos().GetX(), (int) tiles[i].getPos().GetY(), size.x / XY.x, size.y / XY.y, LIGHTGRAY);
+			DrawRectangle((int)tiles[i].getPos().GetX(),(int)tiles[i].getPos().GetY(),size.x / XY.x, size.y / XY.y, tiles[i].getColor());
+		}
 	}
 };
 
@@ -126,8 +132,24 @@ int main(){
 		BeginDrawing();
 		grid.drawGrid();
 
-		window.ClearBackground(RAYWHITE);
+		if(IsMouseButtonDown(0)){
+			std::cout << "Painettu!" << std::endl;
+			for(int i = 0; i < grid.getAmount();i++){
+				//std::cout << "MORO" << std::endl;
+				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
+					std::cout << "TERE" << std::endl;
+					grid.getPixel(i)->setColor(raylib::Color(RED));	
+				}
+			}
+		}
+		if(IsKeyPressed(KEY_ENTER)){
+			for(int i = 0; i < grid.getAmount(); i++){
+				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
+			}		
+		}
 
+
+		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
