@@ -2,31 +2,36 @@
 #include <iostream>
 //(The pragma export line is just so cland stops whining about it)
 
+const int PIXEL_AMOUNT = 50;		//This holds the multiplier that determines the amount of pixels
+
 class Grid{
 protected:
 	raylib::Vector2 size;
+	raylib::Vector2 XY;
 	raylib::Vector2 * tiles;
 	int Amount;
 public:
 	Grid(int sizeX, int sizeY){
 		size = (Vector2) {(float) sizeX,(float) sizeY};
-		int X = size.GetX() / 10;
-		int Y = size.GetY() / 10;
+		int X = size.GetX() / PIXEL_AMOUNT;	//Amount of pixels per row
+		int Y = size.GetY() / PIXEL_AMOUNT;	//Amount of rows
 
-		Amount = sizeX / 10 * sizeY / 10;
+		XY = raylib::Vector2(X, Y);
+
+		Amount = X * Y;			//Amount of pixels
 		tiles = new raylib::Vector2[Amount];
 
-		for(int i = 0;i < X;i++){
-			for(int j = 0;j < Y;j++){
-				tiles[(j * Y)+j].SetX(X * i);
-				tiles[(j * Y)+j].SetY(Y*j);
+		for(int i = 0;i < Y;i++){	//For all rows
+			for(int j = 0;j < X;j++){	//For pixels in row
+				tiles[(i * X) + j].SetX((float)j * sizeX / X);	//I * amount of pixels per row + position in current row
+				tiles[(i * X) + j].SetY((float)i * sizeY / Y);
 
 			}
 		}
 	}
 	void drawGrid(){
 		for(int i = 0;i < Amount; i++){
-			DrawRectangleLines((int)tiles[i].GetX(), (int) tiles[i].GetY(), 10, 10, GRAY);
+			DrawRectangleLines((int)tiles[i].GetX(), (int) tiles[i].GetY(), size.x / XY.x, size.y / XY.y, GRAY);
 		}
 	}
 	void DestroyGrid(){
@@ -35,7 +40,14 @@ public:
 	int getAmount(){
 		return Amount;
 	}
-	
+
+	//For debugging !!
+	void printSome(){
+		for(int i = 0; i < Amount;i++){
+			std::cout << "Index: " << i << " X: " << tiles[i].GetX() << " Y: " << tiles[i].GetY() << std::endl;
+		}
+
+	}
 };
 
 int main(){
@@ -49,8 +61,10 @@ int main(){
 	
 	Grid grid(screenWidth, screenHeight);
 
+	grid.printSome();		//Printing the positions of all elements
+
 	while(!window.ShouldClose()){
-		std::cout << "Mouse pos is: X: " << mouse.GetX() << " + Y: " << mouse.GetY() << std::endl;		
+	//	std::cout << "Mouse pos is: X: " << mouse.GetX() << " + Y: " << mouse.GetY() << std::endl;		
 		mouse = GetMousePosition();
 				
 		
@@ -60,7 +74,7 @@ int main(){
 
 		window.ClearBackground(RAYWHITE);
 
-		DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
+		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
 	}
