@@ -2,7 +2,7 @@
 #include <iostream>
 //(The pragma export line is just so cland stops whining about it)
 
-const int PIXEL_AMOUNT = 50;		//This holds the multiplier that determines the amount of pixels
+const int PIXEL_AMOUNT = 10;		//This holds the multiplier that determines the amount of pixels (Lower for less pixels)
 
 class Pixel{
 protected:
@@ -117,28 +117,26 @@ int main(){
 	raylib::Vector2 mouse(GetMousePosition());
 
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
-	SetTargetFPS(60);
+	SetTargetFPS(244);
 	
 	Grid grid(screenWidth, screenHeight);
+	raylib::Color currentColor = raylib::Color(RED);
 
 	grid.printSome();		//Printing the positions of all elements
 
 	while(!window.ShouldClose()){
 	//	std::cout << "Mouse pos is: X: " << mouse.GetX() << " + Y: " << mouse.GetY() << std::endl;		
-		mouse = GetMousePosition();
-				
 		
-		//---( Drawing ) ---
-		BeginDrawing();
-		grid.drawGrid();
-
+		//---( Updates )---
+		mouse = GetMousePosition();
+					
 		if(IsMouseButtonDown(0)){
-			std::cout << "Painettu!" << std::endl;
+			//std::cout << "Painettu!" << std::endl;
 			for(int i = 0; i < grid.getAmount();i++){
 				//std::cout << "MORO" << std::endl;
 				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
-					std::cout << "TERE" << std::endl;
-					grid.getPixel(i)->setColor(raylib::Color(RED));	
+			//		std::cout << "TERE" << std::endl;
+					grid.getPixel(i)->setColor(raylib::Color(currentColor));	
 				}
 			}
 		}
@@ -147,6 +145,37 @@ int main(){
 				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
 			}		
 		}
+		if(IsKeyPressed(KEY_R)){
+			currentColor = raylib::Color(RED);		
+		}
+		if(IsKeyPressed(KEY_G)){
+			currentColor = raylib::Color(GREEN);
+		}
+		if(IsKeyPressed(KEY_B)){
+			currentColor = raylib::Color(BLUE);	
+		}
+		if(IsKeyPressed(KEY_W)){
+			currentColor = raylib::Color(RAYWHITE);
+		}
+		if(IsKeyPressed(KEY_Y)){
+			currentColor = raylib::Color(YELLOW);
+		}
+		if(IsKeyPressed(KEY_D)){
+			currentColor = raylib::Color(BLACK);
+		}
+		if(IsKeyPressed(KEY_V)){
+			currentColor = raylib::Color(VIOLET);
+		}
+		if(IsKeyPressed(KEY_P)){
+			currentColor = raylib::Color(PURPLE);
+		}
+		if(IsKeyPressed(KEY_O)){
+			currentColor = raylib::Color(ORANGE);
+		}
+
+		//---( Drawing ) ---
+		BeginDrawing();
+		grid.drawGrid();
 
 
 		window.ClearBackground(RAYWHITE);
