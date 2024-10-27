@@ -4,11 +4,59 @@
 
 const int PIXEL_AMOUNT = 50;		//This holds the multiplier that determines the amount of pixels
 
-class Grid{
+class Pixel{
 protected:
 	raylib::Vector2 size;
-	raylib::Vector2 XY;
-	raylib::Vector2 * tiles;
+	raylib::Vector2 position;
+	raylib::Color color;
+	raylib::Rectangle rectangle;
+public:
+	Pixel(){
+		size = raylib::Vector2(0, 0);
+		position = raylib::Vector2(0, 0);
+		color = RAYWHITE;
+		rectangle = raylib::Rectangle(0, 0, 0, 0);
+	}
+
+	Pixel(int sizeX, int sizeY, int positionX, int positionY, raylib::Color color){
+		size = raylib::Vector2((float) sizeX, (float) sizeY);	
+		position = raylib::Vector2((float) positionX, (float) positionY);
+		this->color = color;
+		rectangle = raylib::Rectangle(positionX, positionY, sizeX, sizeY);
+	}
+	void setPos(raylib::Vector2 pos){
+		position = pos;
+	}
+	void setSize(raylib::Vector2 size){
+		this->size = size;
+	}
+	void setColor(raylib::Color color){
+		this->color = color;
+	}
+	void setRectangle(raylib::Rectangle rectangle){			//int sizeX, int sizeY, int positionX, int positionY){
+		this->rectangle = rectangle;
+	}
+	raylib::Vector2 getPos(){
+		return this->position;
+	}
+	raylib::Vector2 getSize(){
+		return this->size;
+	}
+	raylib::Color getColor(){
+		return this->color;
+	}
+	raylib::Rectangle getRectangle(){
+		return this->rectangle;
+	}
+
+};
+
+
+class Grid{
+protected:
+	raylib::Vector2 size;		//Size just means window size
+	raylib::Vector2 XY;		//XY has amount of pixels per row in X, and amount of rows on Y
+	Pixel * tiles;	//Position of tiles
 	int Amount;
 public:
 	Grid(int sizeX, int sizeY){
@@ -17,21 +65,27 @@ public:
 		int Y = size.GetY() / PIXEL_AMOUNT;	//Amount of rows
 
 		XY = raylib::Vector2(X, Y);
-
 		Amount = X * Y;			//Amount of pixels
-		tiles = new raylib::Vector2[Amount];
+		
+		tiles = new Pixel[Amount];
 
 		for(int i = 0;i < Y;i++){	//For all rows
 			for(int j = 0;j < X;j++){	//For pixels in row
-				tiles[(i * X) + j].SetX((float)j * sizeX / X);	//I * amount of pixels per row + position in current row
-				tiles[(i * X) + j].SetY((float)i * sizeY / Y);
+				int index = (i * X) + j;
+				tiles[index].setPos(raylib::Vector2((float) j * sizeX / X, (float) i * sizeY / Y));
+				tiles[index].setSize(raylib::Vector2((float) size.x / XY.x, (float)size.y / XY.y));
+				tiles[index].setRectangle(raylib::Rectangle(size.x/XY.x, size.y / XY.y, tiles[index].getPos().GetX(), tiles[index].getPos().GetY()));
+
+
+				//tiles[index].SetX((float)j * sizeX / X);	//I * amount of pixels per row + position in current row
+				//tiles[index].SetY((float)i * sizeY / Y);
 
 			}
 		}
 	}
 	void drawGrid(){
 		for(int i = 0;i < Amount; i++){
-			DrawRectangleLines((int)tiles[i].GetX(), (int) tiles[i].GetY(), size.x / XY.x, size.y / XY.y, GRAY);
+			DrawRectangleLines((int)tiles[i].getPos().GetX(), (int) tiles[i].getPos().GetY(), size.x / XY.x, size.y / XY.y, RED);
 		}
 	}
 	void DestroyGrid(){
@@ -44,7 +98,7 @@ public:
 	//For debugging !!
 	void printSome(){
 		for(int i = 0; i < Amount;i++){
-			std::cout << "Index: " << i << " X: " << tiles[i].GetX() << " Y: " << tiles[i].GetY() << std::endl;
+			std::cout << "Index: " << i << " X: " << tiles[i].getPos().GetX() << " Y: " << tiles[i].getPos().GetY() << std::endl;
 		}
 
 	}
