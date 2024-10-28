@@ -2,7 +2,8 @@
 #include <iostream>
 //(The pragma export line is just so cland stops whining about it)
 
-const int PIXEL_AMOUNT = 10;		//This holds the multiplier that determines the amount of pixels (Lower for less pixels)
+#define COLORS_AMOUNT 15	//If you add more colors, change this value
+#define PIXEL_AMOUNT 10		//This holds the multiplier that determines the amount of pixels (Lower for less pixels)
 
 class Pixel{
 protected:
@@ -109,6 +110,67 @@ public:
 		}
 	}
 };
+/*
+class Game{
+protected:
+	raylib::Window window;
+
+public:
+	Game(raylib::Window window){
+		this->window = window;
+	}
+	
+	raylib::Window getWindow(){
+		return window;
+	}
+	void handleInputs(){
+	
+	}
+};*/
+class ColorPalette{
+protected:
+	raylib::Color lineArray[360];
+	raylib::Vector2 startPos;
+	raylib::Vector2 size;
+public:	
+	ColorPalette(raylib::Vector2 startPos, raylib::Vector2 size){
+		this->startPos = startPos;
+		this->size = size;
+
+		for(int i = 0; i < 360; i++){
+			lineArray[i] = raylib::Color(raylib::Vector3(i , 99, 99));
+		}
+	}
+	void drawPalette(){
+		DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y * 1/5, (Color) {168, 50, 50, 255}, (Color){255, 255, 3, 255});
+		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 1/5,size.x, size.y * 1/5, (Color){255,255,3,255}, (Color){0, 255, 0, 255});
+		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 2/5, size.x, size.y * 1/5, (Color) {0, 255, 0, 255}, (Color){0, 255, 255, 255});
+		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 3/5,size.x, size.y * 1/5, (Color){0,255,255,255}, (Color){0, 0, 255, 255});
+		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 4/5,size.x, size.y * 1/5, (Color){0, 0,255,255}, (Color){255, 0, 255, 255});	
+		DrawRectangleGradientV(startPos.x, startPos.y + size.y, size.x, size.y * 1/5, (Color){255, 0,255,255}, (Color){235, 52, 52, 255});
+//	DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y / 2, (Color) {168, 50, 50, 255}, (Color){50, 168, 168, 255});	
+		//for(int i = 0; i < 360;i++){
+		//	lineArray[i].DrawLine((Vector2) {startPos.x, startPos.y + i * 2}, (Vector2){startPos.x + size.x, startPos.y + i * 2}, size.y);	//Drawing line with a thickness
+		//}	
+	}
+};
+/*
+class ColorLine{
+protected:
+	raylib::Vector2 startPos;
+	raylib::Vector2 endPos;
+	raylib::Color color;
+public:
+	ColorLine(raylib::Vector2 startPos, raylib::Vector2 endPos, raylib::Color color){
+		this->startPos = startPos;
+		this->endPos = endPos;
+		this->color = color;
+	}
+	void drawLine(){
+		color.DrawLine(startPos, endPos);
+	}
+};*/
+
 
 int main(){
 	int screenWidth = 800;
@@ -118,7 +180,9 @@ int main(){
 
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
 	SetTargetFPS(244);
-	
+
+	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
+
 	Grid grid(screenWidth, screenHeight);
 	raylib::Color currentColor = raylib::Color(RED);
 
@@ -175,14 +239,16 @@ int main(){
 
 		//---( Drawing ) ---
 		BeginDrawing();
-		grid.drawGrid();
 
+		grid.drawGrid();
+		colortPalette->drawPalette();
 
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
 
 		EndDrawing();
 	}
+	delete(colortPalette);
 	grid.DestroyGrid();
 	
 	return 0;
