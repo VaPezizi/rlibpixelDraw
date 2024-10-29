@@ -129,7 +129,7 @@ public:
 };*/
 class ColorPalette{
 protected:
-	raylib::Color lineArray[360];
+	//raylib::Color lineArray[360];
 	raylib::Vector2 startPos;
 	raylib::Vector2 size;
 public:	
@@ -137,9 +137,9 @@ public:
 		this->startPos = startPos;
 		this->size = size;
 
-		for(int i = 0; i < 360; i++){
+		/*for(int i = 0; i < 360; i++){
 			lineArray[i] = raylib::Color(raylib::Vector3(i , 99, 99));
-		}
+		}*/
 	}
 	void drawPalette(){
 		DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y * 1/5, (Color) {168, 50, 50, 255}, (Color){255, 255, 3, 255});
@@ -179,7 +179,7 @@ int main(){
 	raylib::Vector2 mouse(GetMousePosition());
 
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
-	SetTargetFPS(244);
+	SetTargetFPS(240);
 
 	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
 
@@ -245,7 +245,7 @@ int main(){
 
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
-
+		DrawFPS(10, 10);
 		EndDrawing();
 	}
 	delete(colortPalette);
