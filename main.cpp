@@ -130,28 +130,42 @@ public:
 class ColorPalette{
 protected:
 	//raylib::Color lineArray[360];
+	raylib::Rectangle rectangle;
 	raylib::Vector2 startPos;
 	raylib::Vector2 size;
 public:	
 	ColorPalette(raylib::Vector2 startPos, raylib::Vector2 size){
 		this->startPos = startPos;
 		this->size = size;
-
+		this->rectangle = raylib::Rectangle(startPos, (Vector2){size.x, size.y * 6/5});
 		/*for(int i = 0; i < 360; i++){
 			lineArray[i] = raylib::Color(raylib::Vector3(i , 99, 99));
 		}*/
 	}
 	void drawPalette(){
-		DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y * 1/5, (Color) {168, 50, 50, 255}, (Color){255, 255, 3, 255});
-		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 1/5,size.x, size.y * 1/5, (Color){255,255,3,255}, (Color){0, 255, 0, 255});
-		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 2/5, size.x, size.y * 1/5, (Color) {0, 255, 0, 255}, (Color){0, 255, 255, 255});
-		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 3/5,size.x, size.y * 1/5, (Color){0,255,255,255}, (Color){0, 0, 255, 255});
-		DrawRectangleGradientV(startPos.x, startPos.y + size.y * 4/5,size.x, size.y * 1/5, (Color){0, 0,255,255}, (Color){255, 0, 255, 255});	
-		DrawRectangleGradientV(startPos.x, startPos.y + size.y, size.x, size.y * 1/5, (Color){255, 0,255,255}, (Color){235, 52, 52, 255});
-//	DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y / 2, (Color) {168, 50, 50, 255}, (Color){50, 168, 168, 255});	
+		//DrawRectangleGradientV(startPos.x, startPos.y, size.x, size.y * 1/5, (Color) {168, 50, 50, 255}, (Color){255, 255, 3, 255});
+		//DrawRectangleGradientV(startPos.x, startPos.y + size.y * 1/5,size.x, size.y * 1/5, (Color){255,255,3,255}, (Color){0, 255, 0, 255});
+		//DrawRectangleGradientV(startPos.x, startPos.y + size.y * 2/5, size.x, size.y * 1/5, (Color) {0, 255, 0, 255}, (Color){0, 255, 255, 255});
+		//DrawRectangleGradientV(startPos.x, startPos.y + size.y * 3/5,size.x, size.y * 1/5, (Color){0,255,255,255}, (Color){0, 0, 255, 255});
+		//DrawRectangleGradientV(startPos.x, startPos.y + size.y * 4/5,size.x, size.y * 1/5, (Color){0, 0,255,255}, (Color){255, 0, 255, 255});	
+		//DrawRectangleGradientV(startPos.x, startPos.y + size.y, size.x, size.y * 1/5, (Color){255, 0,255,255}, (Color){235, 52, 52, 255});
+		for(int i = 0;i < 360;i++){
+			DrawLine(startPos.x, startPos.y + i, startPos.x + 20, startPos.y + i, ColorFromHSV(i, 1, 1));
+		}
+		
 		//for(int i = 0; i < 360;i++){
 		//	lineArray[i].DrawLine((Vector2) {startPos.x, startPos.y + i * 2}, (Vector2){startPos.x + size.x, startPos.y + i * 2}, size.y);	//Drawing line with a thickness
 		//}	
+	}
+	void drawColorRect(){
+		rectangle.Draw(raylib::BLACK);
+	}
+	raylib::Rectangle getSquare(){
+		return rectangle;
+	}
+	raylib::Color getColorFromPos(Vector2 position){
+		float posy = position.y - 10;
+		return ColorFromHSV(posy, 1, 1);
 	}
 };
 /*
@@ -187,6 +201,8 @@ int main(){
 	raylib::Color currentColor = raylib::Color(RED);
 
 	grid.printSome();		//Printing the positions of all elements
+//	Vector3 testiHSV = ColorToHSV(RED);
+//	std::cout << "Hue: " << testiHSV.x, " saturation: " << testiHSV.y << " value: ";
 
 	while(!window.ShouldClose()){
 	//	std::cout << "Mouse pos is: X: " << mouse.GetX() << " + Y: " << mouse.GetY() << std::endl;		
@@ -204,6 +220,14 @@ int main(){
 				}
 			}
 		}
+		if(CheckCollisionPointRec(mouse, colortPalette->getSquare())){
+			if(IsMouseButtonPressed(1)){
+				currentColor = colortPalette->getColorFromPos(mouse);
+				std::cout << "Mouse X: " << mouse.x << " Mouse Y: " << mouse.y << " Current color: "<< currentColor << std::endl;
+			}				
+		}
+
+
 		if(IsKeyPressed(KEY_ENTER)){
 			for(int i = 0; i < grid.getAmount(); i++){
 				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
@@ -242,6 +266,7 @@ int main(){
 
 		grid.drawGrid();
 		colortPalette->drawPalette();
+		//colortPalette->drawColorRect();
 
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
