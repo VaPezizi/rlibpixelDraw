@@ -133,11 +133,15 @@ protected:
 	raylib::Rectangle rectangle;
 	raylib::Vector2 startPos;
 	raylib::Vector2 size;
+	float value;
+	float saturation;
 public:	
 	ColorPalette(raylib::Vector2 startPos, raylib::Vector2 size){
 		this->startPos = startPos;
 		this->size = size;
 		this->rectangle = raylib::Rectangle(startPos, (Vector2){size.x, size.y * 6/5});
+		this->value = 1.0f;
+		this->saturation = 1.0f;
 		/*for(int i = 0; i < 360; i++){
 			lineArray[i] = raylib::Color(raylib::Vector3(i , 99, 99));
 		}*/
@@ -150,7 +154,7 @@ public:
 		//DrawRectangleGradientV(startPos.x, startPos.y + size.y * 4/5,size.x, size.y * 1/5, (Color){0, 0,255,255}, (Color){255, 0, 255, 255});	
 		//DrawRectangleGradientV(startPos.x, startPos.y + size.y, size.x, size.y * 1/5, (Color){255, 0,255,255}, (Color){235, 52, 52, 255});
 		for(int i = 0;i < 360;i++){
-			DrawLine(startPos.x, startPos.y + i, startPos.x + 20, startPos.y + i, ColorFromHSV(i, 1, 1));
+			DrawLine(startPos.x, startPos.y + i, startPos.x + 20, startPos.y + i, ColorFromHSV(i, saturation, value));
 		}
 		
 		//for(int i = 0; i < 360;i++){
@@ -165,7 +169,23 @@ public:
 	}
 	raylib::Color getColorFromPos(Vector2 position){
 		float posy = position.y - 10;
-		return ColorFromHSV(posy, 1, 1);
+		return ColorFromHSV(posy, saturation, value);
+	}
+	void setSaturation(float saturation){
+		if(saturation >= 0 && saturation <= 1){
+			this->saturation = saturation;
+		}
+	}
+	void setValue(float value){
+		if(value <= 1 && value >= 0){
+			this->value = value;
+		}
+	}
+	float getValue(){
+		return this->value;
+	}
+	float getSaturation(){
+		return this->saturation;
 	}
 };
 /*
@@ -233,32 +253,21 @@ int main(){
 				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
 			}		
 		}
-		if(IsKeyPressed(KEY_R)){
-			currentColor = raylib::Color(RED);		
+		if(IsKeyPressed(KEY_UP)){
+			std::cout << colortPalette -> getSaturation() << std::endl;	
+			colortPalette->setSaturation(colortPalette->getSaturation() + 0.1);	
 		}
-		if(IsKeyPressed(KEY_G)){
-			currentColor = raylib::Color(GREEN);
-		}
-		if(IsKeyPressed(KEY_B)){
-			currentColor = raylib::Color(BLUE);	
+		if(IsKeyPressed(KEY_DOWN)){
+			std::cout << colortPalette -> getSaturation() << std::endl;	
+			colortPalette->setSaturation(colortPalette->getSaturation() - 0.1);		
 		}
 		if(IsKeyPressed(KEY_W)){
-			currentColor = raylib::Color(RAYWHITE);
+			colortPalette->setValue(colortPalette->getValue() + 0.1);
+			std::cout << colortPalette->getValue() << std::endl;	
 		}
-		if(IsKeyPressed(KEY_Y)){
-			currentColor = raylib::Color(YELLOW);
-		}
-		if(IsKeyPressed(KEY_D)){
-			currentColor = raylib::Color(BLACK);
-		}
-		if(IsKeyPressed(KEY_V)){
-			currentColor = raylib::Color(VIOLET);
-		}
-		if(IsKeyPressed(KEY_P)){
-			currentColor = raylib::Color(PURPLE);
-		}
-		if(IsKeyPressed(KEY_O)){
-			currentColor = raylib::Color(ORANGE);
+		if(IsKeyPressed(KEY_S)){
+			colortPalette->setValue(colortPalette->getValue() - 0.1);
+			std::cout << colortPalette->getValue() << std::endl;
 		}
 
 		//---( Drawing ) ---
