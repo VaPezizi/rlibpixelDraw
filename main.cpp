@@ -59,12 +59,13 @@ protected:
 	raylib::Vector2 XY;		//XY has amount of pixels per row in X, and amount of rows on Y
 	int Amount;
 	Pixel * tiles;	//Position of tiles
+	raylib::RenderTexture2D * target;
 public:
-	Grid(int sizeX, int sizeY){
+	Grid(int sizeX, int sizeY, raylib::RenderTexture2D * target){
 		size = (Vector2) {(float) sizeX,(float) sizeY};
 		int X = size.GetX() / PIXEL_AMOUNT;	//Amount of pixels per row
 		int Y = size.GetY() / PIXEL_AMOUNT;	//Amount of rows
-
+		this->target = target;
 		XY = raylib::Vector2(X, Y);
 		Amount = X * Y;			//Amount of pixels
 		
@@ -106,7 +107,9 @@ public:
 	void drawGrid(){
 		for(int i = 0;i < Amount; i++){
 			//DrawRectangleLines((int)tiles[i].getPos().GetX(), (int) tiles[i].getPos().GetY(), size.x / XY.x, size.y / XY.y, LIGHTGRAY);
+			BeginTextureMode(*target);
 			DrawRectangle((int)tiles[i].getPos().GetX(),(int)tiles[i].getPos().GetY(),size.x / XY.x, size.y / XY.y, tiles[i].getColor());
+			EndTextureMode();
 		}
 	}
 };
@@ -188,22 +191,28 @@ public:
 		return this->saturation;
 	}
 };
-/*
-class ColorLine{
+
+class Slider{
 protected:
-	raylib::Vector2 startPos;
-	raylib::Vector2 endPos;
-	raylib::Color color;
+	raylib::Vector2 size;
+	raylib::Vector2 position;
+	float value;
+	raylib::Rectangle slider;
+	raylib::Rectangle movingPart;
 public:
-	ColorLine(raylib::Vector2 startPos, raylib::Vector2 endPos, raylib::Color color){
-		this->startPos = startPos;
-		this->endPos = endPos;
-		this->color = color;
+	Slider(raylib::Vector2 size, raylib::Vector2 position){
+		this->size = size;
+		this->position = position;
+		this->value = 0.5;
+		this->slider = raylib::Rectangle(position, size);
+		this->movingPart = raylib::Rectangle((Vector2){position.x - (size.x * 2.5f), position.y + size.y / 2}, (Vector2){size.x * 5, size.y / 20});
+
 	}
-	void drawLine(){
-		color.DrawLine(startPos, endPos);
+	void drawSlider(){
+		this->slider.Draw(raylib::BLACK);
+		this->movingPart.Draw(raylib::DARKGRAY);
 	}
-};*/
+};
 
 
 int main(){
@@ -215,9 +224,18 @@ int main(){
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
 	SetTargetFPS(240);
 
-	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
+	raylib::RenderTexture2D * target = new raylib::RenderTexture2D();	//Allocating memory for the texture
+	*target = LoadRenderTexture(screenWidth, screenHeight);
 
-	Grid grid(screenWidth, screenHeight);
+	//Clearing texture
+	BeginTextureMode(*target);
+	ClearBackground(raylib::Color(RAYWHITE));
+	EndTextureMode();
+
+	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
+	Slider slider = Slider((Vector2){4, 50}, (Vector2){10, 400});		//Size, Position
+
+	Grid grid(screenWidth, screenHeight, target);
 	raylib::Color currentColor = raylib::Color(RED);
 
 	grid.printSome();		//Printing the positions of all elements
@@ -236,7 +254,10 @@ int main(){
 				//std::cout << "MORO" << std::endl;
 				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
 			//		std::cout << "TERE" << std::endl;
-					grid.getPixel(i)->setColor(raylib::Color(currentColor));	
+					//grid.getPixel(i)->setColor(raylib::Color(currentColor));	
+					BeginTextureMode(*target);
+					DrawCircle(mouse.x, mouse.y, 10, currentColor);
+					EndTextureMode();
 				}
 			}
 		}
@@ -266,16 +287,21 @@ int main(){
 			std::cout << colortPalette->getValue() << std::endl;	
 		}
 		if(IsKeyPressed(KEY_S)){
-			colortPalette->setValue(colortPalette->getValue() - 0.1);
+		
 			std::cout << colortPalette->getValue() << std::endl;
+			colortPalette->setValue(colortPalette->getValue() - 0.1);
 		}
 
 		//---( Drawing ) ---
 		BeginDrawing();
 
-		grid.drawGrid();
-		colortPalette->drawPalette();
+		//grid.drawGrid();
+
 		//colortPalette->drawColorRect();
+
+		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
+		colortPalette->drawPalette();
+		slider.drawSlider();
 
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
@@ -283,6 +309,7 @@ int main(){
 		EndDrawing();
 	}
 	delete(colortPalette);
+	delete(target);
 	grid.DestroyGrid();
 	
 	return 0;
