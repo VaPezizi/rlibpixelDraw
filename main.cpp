@@ -205,12 +205,17 @@ public:
 		this->position = position;
 		this->value = 0.5;
 		this->slider = raylib::Rectangle(position, size);
-		this->movingPart = raylib::Rectangle((Vector2){position.x - (size.x * 2.5f), position.y + size.y / 2}, (Vector2){size.x * 5, size.y / 20});
+		this->movingPart = raylib::Rectangle((Vector2){position.x - size.x, position.y + size.y / 2}, (Vector2){size.x * 3, size.y / 20});
 
 	}
 	void drawSlider(){
 		this->slider.Draw(raylib::BLACK);
-		this->movingPart.Draw(raylib::DARKGRAY);
+		this->movingPart.Draw(raylib::LIGHTGRAY);
+	}
+	void updateSlider(raylib::Vector2 mousepos){
+		if(CheckCollisionPointRec(mousepos, this->movingPart) && this->movingPart.GetY() > this->slider.GetY()){
+			this->movingPart.SetY(mousepos.y - movingPart.GetHeight() / 2);
+		}	
 	}
 };
 
@@ -233,7 +238,7 @@ int main(){
 	EndTextureMode();
 
 	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
-	Slider slider = Slider((Vector2){4, 50}, (Vector2){10, 400});		//Size, Position
+	Slider slider = Slider((Vector2){5, 100}, (Vector2){10, 400});		//Size, Position
 
 	Grid grid(screenWidth, screenHeight, target);
 	raylib::Color currentColor = raylib::Color(RED);
@@ -246,15 +251,17 @@ int main(){
 	//	std::cout << "Mouse pos is: X: " << mouse.GetX() << " + Y: " << mouse.GetY() << std::endl;		
 		
 		//---( Updates )---
-		mouse = GetMousePosition();
-					
+		mouse = GetMousePosition();		
+
 		if(IsMouseButtonDown(0)){
+			slider.updateSlider(mouse);
 			//std::cout << "Painettu!" << std::endl;
-			for(int i = 0; i < grid.getAmount();i++){
+			for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
 				//std::cout << "MORO" << std::endl;
 				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
 			//		std::cout << "TERE" << std::endl;
-					//grid.getPixel(i)->setColor(raylib::Color(currentColor));	
+					//grid.getPixel(i)->setColor(raylib::Color(currentColor));
+					std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
 					BeginTextureMode(*target);
 					DrawCircle(mouse.x, mouse.y, 10, currentColor);
 					EndTextureMode();
@@ -270,9 +277,14 @@ int main(){
 
 
 		if(IsKeyPressed(KEY_ENTER)){
-			for(int i = 0; i < grid.getAmount(); i++){
+			/*for(int i = 0; i < grid.getAmount(); i++){
 				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
-			}		
+			}*/
+			BeginTextureMode(*target);
+
+			ClearBackground(raylib::Color(RAYWHITE));
+			EndTextureMode();
+					
 		}
 		if(IsKeyPressed(KEY_UP)){
 			std::cout << colortPalette -> getSaturation() << std::endl;	
