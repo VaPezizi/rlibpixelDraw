@@ -217,6 +217,9 @@ public:
 			this->movingPart.SetY(mousepos.y - movingPart.GetHeight() / 2);
 		}	
 	}
+	float getSliderPos(){
+		//return (this->slider.y - (size.y / 2) - a);
+	}
 };
 
 
