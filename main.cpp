@@ -239,6 +239,8 @@ int main(){
 	int screenWidth = 800;
 	int screenHeight = 600;
 
+	bool draw = 0;
+
 	raylib::Vector2 mouse(GetMousePosition());
 
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
@@ -270,12 +272,16 @@ int main(){
 
 		if(IsMouseButtonDown(0)){
 			
-			if(CheckCollisionPointRec(mouse, slider.getMovingPartPos())) slider.updateSlider(mouse);
+			if(CheckCollisionPointRec(mouse, slider.getMovingPartPos())){
+			       	slider.updateSlider(mouse);
+				colortPalette->setValue(slider.getSliderPos());
+				draw = 0;	
+			}else draw = 1;
 			
 			//std::cout << "Painettu!" << std::endl;
 			for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
 				//std::cout << "MORO" << std::endl;
-				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
+				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle()) && draw){
 			//		std::cout << "TERE" << std::endl;
 					//grid.getPixel(i)->setColor(raylib::Color(currentColor));
 					//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
