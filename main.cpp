@@ -19,22 +19,22 @@ public:
 		rectangle = raylib::Rectangle(0, 0, 0, 0);
 	}
 
-	Pixel(int sizeX, int sizeY, int positionX, int positionY, raylib::Color color){
+	Pixel(const int& sizeX, const int& sizeY, const int& positionX, const int& positionY, const raylib::Color& color){
 		size = raylib::Vector2((float) sizeX, (float) sizeY);	
 		position = raylib::Vector2((float) positionX, (float) positionY);
 		this->color = color;
 		rectangle = raylib::Rectangle(positionX, positionY, sizeX, sizeY);
 	}
-	void setPos(raylib::Vector2 pos){
+	void setPos(const raylib::Vector2& pos){
 		position = pos;
 	}
-	void setSize(raylib::Vector2 size){
+	void setSize(const raylib::Vector2& size){
 		this->size = size;
 	}
-	void setColor(raylib::Color color){
+	void setColor(const raylib::Color& color){
 		this->color = color;
 	}
-	void setRectangle(raylib::Rectangle rectangle){			//int sizeX, int sizeY, int positionX, int positionY){
+	void setRectangle(const raylib::Rectangle& rectangle){			//int sizeX, int sizeY, int positionX, int positionY){
 		this->rectangle = rectangle;
 	}
 	raylib::Vector2 getPos(){
@@ -61,7 +61,7 @@ protected:
 	Pixel * tiles;	//Position of tiles
 	raylib::RenderTexture2D * target;
 public:
-	Grid(int sizeX, int sizeY, raylib::RenderTexture2D * target){
+	Grid(const int& sizeX, const int& sizeY, raylib::RenderTexture2D * target){
 		size = (Vector2) {(float) sizeX,(float) sizeY};
 		int X = size.GetX() / PIXEL_AMOUNT;	//Amount of pixels per row
 		int Y = size.GetY() / PIXEL_AMOUNT;	//Amount of rows
@@ -93,7 +93,7 @@ public:
 	int getAmount(){
 		return Amount;
 	}
-	Pixel * getPixel(int index){
+	Pixel * getPixel(const int& index){
 		return &this->tiles[index];
 	}
 	//For debugging !!
@@ -139,7 +139,7 @@ protected:
 	float value;
 	float saturation;
 public:	
-	ColorPalette(raylib::Vector2 startPos, raylib::Vector2 size){
+	ColorPalette(const raylib::Vector2& startPos, const raylib::Vector2& size){
 		this->startPos = startPos;
 		this->size = size;
 		this->rectangle = raylib::Rectangle(startPos, (Vector2){size.x, size.y * 6/5});
@@ -170,16 +170,16 @@ public:
 	raylib::Rectangle getSquare(){
 		return rectangle;
 	}
-	raylib::Color getColorFromPos(Vector2 position){
+	raylib::Color getColorFromPos(const Vector2& position){
 		float posy = position.y - 10;
 		return ColorFromHSV(posy, saturation, value);
 	}
-	void setSaturation(float saturation){
+	void setSaturation(const float& saturation){
 		if(saturation >= 0 && saturation <= 1){
 			this->saturation = saturation;
 		}
 	}
-	void setValue(float value){
+	void setValue(const float& value){
 		if(value <= 1 && value >= 0){
 			this->value = value;
 		}
@@ -200,7 +200,7 @@ protected:
 	raylib::Rectangle slider;
 	raylib::Rectangle movingPart;
 public:
-	Slider(raylib::Vector2 size, raylib::Vector2 position){
+	Slider(const raylib::Vector2& size, const raylib::Vector2& position){
 		this->size = size;
 		this->position = position;
 		this->value = 0.5;
@@ -212,13 +212,25 @@ public:
 		this->slider.Draw(raylib::BLACK);
 		this->movingPart.Draw(raylib::LIGHTGRAY);
 	}
-	void updateSlider(raylib::Vector2 mousepos){
-		if(CheckCollisionPointRec(mousepos, this->movingPart) && this->movingPart.GetY() > this->slider.GetY()){
+	void updateSlider(raylib::Vector2& mousepos){
+		float temp = getSliderPos();
+		//if(CheckCollisionPointRec(mousepos, this->movingPart) && this->movingPart.GetY() >= this->slider.GetY()){
+		if(temp > 0 && temp < 1){
 			this->movingPart.SetY(mousepos.y - movingPart.GetHeight() / 2);
-		}	
+		}else if(temp < 0)this->fixMovingPartPos(0.0001);
+		else this->fixMovingPartPos(0.9999);	
 	}
-	float getSliderPos(){
-		//return (this->slider.y - (size.y / 2) - a);
+
+	//Takes a number between 0 and 1 and fixes the sliders position based on that
+	void fixMovingPartPos(const float& pos){
+		this->movingPart.SetY(pos * size.y + position.y);
+
+	}
+	float getSliderPos(){		//TODO:	Return a value between 0.0 - 1.0f based on the position of the slidin part
+		return - (position.y - this->movingPart.y) / size.y;
+	}
+	raylib::Rectangle& getMovingPartPos(){
+		return this->movingPart;
 	}
 };
 
@@ -257,14 +269,16 @@ int main(){
 		mouse = GetMousePosition();		
 
 		if(IsMouseButtonDown(0)){
-			slider.updateSlider(mouse);
+			
+			if(CheckCollisionPointRec(mouse, slider.getMovingPartPos())) slider.updateSlider(mouse);
+			
 			//std::cout << "Painettu!" << std::endl;
 			for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
 				//std::cout << "MORO" << std::endl;
 				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle())){
 			//		std::cout << "TERE" << std::endl;
 					//grid.getPixel(i)->setColor(raylib::Color(currentColor));
-					std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
+					//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
 					BeginTextureMode(*target);
 					DrawCircle(mouse.x, mouse.y, 10, currentColor);
 					EndTextureMode();
@@ -306,6 +320,9 @@ int main(){
 			std::cout << colortPalette->getValue() << std::endl;
 			colortPalette->setValue(colortPalette->getValue() - 0.1);
 		}
+		
+		//Place for some testing prints, that need to run every frame:
+		std::cout << "Slider position function: " << slider.getSliderPos() << std::endl;
 
 		//---( Drawing ) ---
 		BeginDrawing();
