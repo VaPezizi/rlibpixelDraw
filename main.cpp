@@ -130,7 +130,7 @@ public:
 	
 	}
 };*/
-class ColorPalette{
+class ColorPalette{		//TODO: Fix a bug, that allows selecting a color outside the bound of the color palette
 protected:
 	//raylib::Color lineArray[360];
 	raylib::Rectangle rectangle;
@@ -197,6 +197,7 @@ protected:
 	raylib::Vector2 size;
 	raylib::Vector2 position;
 	float value;
+	raylib::Rectangle hitbox;
 	raylib::Rectangle slider;
 	raylib::Rectangle movingPart;
 public:
@@ -206,7 +207,7 @@ public:
 		this->value = 0.5;
 		this->slider = raylib::Rectangle(position, size);
 		this->movingPart = raylib::Rectangle((Vector2){position.x - size.x, position.y + size.y / 2}, (Vector2){size.x * 3, size.y / 20});
-
+		this->hitbox = raylib::Rectangle((Vector2){position.x - size.x * 1.1f, position.y}, (Vector2){size.x * 3.3f, size.y});
 	}
 	void drawSlider(){
 		this->slider.Draw(raylib::BLACK);
@@ -226,11 +227,20 @@ public:
 		this->movingPart.SetY(pos * size.y + position.y);
 
 	}
-	float getSliderPos(){		//TODO:	Return a value between 0.0 - 1.0f based on the position of the slidin part
+	float getSliderPos(){		//(DONE):	Return a value between 0.0 - 1.0f based on the position of the slidin part
 		return - (position.y - this->movingPart.y) / size.y;
 	}
 	raylib::Rectangle& getMovingPartPos(){
 		return this->movingPart;
+	}
+	raylib::Rectangle& getHitbox(){
+		return this->hitbox;
+	}
+
+
+	//For testing
+	void drawHitbox(){
+		this->hitbox.Draw(RED);
 	}
 };
 
@@ -272,7 +282,7 @@ int main(){
 
 		if(IsMouseButtonDown(0)){
 			
-			if(CheckCollisionPointRec(mouse, slider.getMovingPartPos())){
+			if(CheckCollisionPointRec(mouse, slider.getHitbox())){
 			       	slider.updateSlider(mouse);
 				colortPalette->setValue(slider.getSliderPos());
 				draw = 0;	
@@ -340,6 +350,7 @@ int main(){
 		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
 		colortPalette->drawPalette();
 		slider.drawSlider();
+		//slider.drawHitbox();
 
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
