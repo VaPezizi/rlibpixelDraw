@@ -267,10 +267,10 @@ int main(){
 	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
 	Slider slider = Slider((Vector2){5, 100}, (Vector2){10, 400});		//Size, Position
 
-	Grid grid(screenWidth, screenHeight, target);
+	//Grid grid(screenWidth, screenHeight, target);
 	raylib::Color currentColor = raylib::Color(RED);
 
-	grid.printSome();		//Printing the positions of all elements
+	//grid.printSome();		//Printing the positions of all elements
 //	Vector3 testiHSV = ColorToHSV(RED);
 //	std::cout << "Hue: " << testiHSV.x, " saturation: " << testiHSV.y << " value: ";
 
@@ -289,17 +289,17 @@ int main(){
 			}else draw = 1;
 			
 			//std::cout << "Painettu!" << std::endl;
-			for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
+		//	for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
 				//std::cout << "MORO" << std::endl;
-				if(CheckCollisionPointRec(mouse, grid.getPixel(i)->getRectangle()) && draw){
-			//		std::cout << "TERE" << std::endl;
-					//grid.getPixel(i)->setColor(raylib::Color(currentColor));
-					//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
-					BeginTextureMode(*target);
-					DrawCircle(mouse.x, mouse.y, 10, currentColor);
-					EndTextureMode();
-				}
+			if(draw){
+		//		std::cout << "TERE" << std::endl;
+				//grid.getPixel(i)->setColor(raylib::Color(currentColor));
+				//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
+				BeginTextureMode(*target);
+				DrawCircle(mouse.x, mouse.y, 10, currentColor);
+				EndTextureMode();
 			}
+			
 		}
 		if(CheckCollisionPointRec(mouse, colortPalette->getSquare())){
 			if(IsMouseButtonPressed(1)){
@@ -359,7 +359,7 @@ int main(){
 	}
 	delete(colortPalette);
 	delete(target);
-	grid.DestroyGrid();
+//	grid.DestroyGrid();
 	
 	return 0;
 }
