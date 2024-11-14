@@ -2,6 +2,8 @@
 #include <iostream>
 //(The pragma export line is just so cland stops whining about it)
 
+#define _VALUE 1
+#define _SATURATION 0
 #define COLORS_AMOUNT 15	//If you add more colors, change this value
 #define PIXEL_AMOUNT 10		//This holds the multiplier that determines the amount of pixels (Lower for less pixels)
 
@@ -194,14 +196,17 @@ public:
 
 class Slider{
 protected:
+	bool type;
 	raylib::Vector2 size;
 	raylib::Vector2 position;
 	float value;
 	raylib::Rectangle hitbox;
 	raylib::Rectangle slider;
 	raylib::Rectangle movingPart;
+
 public:
-	Slider(const raylib::Vector2& size, const raylib::Vector2& position){
+	Slider(const raylib::Vector2& size, const raylib::Vector2& position, bool type){
+		this->type = type;
 		this->size = size;
 		this->position = position;
 		this->value = 0.5;
@@ -236,7 +241,16 @@ public:
 	raylib::Rectangle& getHitbox(){
 		return this->hitbox;
 	}
-
+	bool checkSlider(raylib::Vector2 * mousepos, ColorPalette * colortPalette){
+		if(CheckCollisionPointRec(*mousepos, this->getHitbox())){
+			       	this->updateSlider(*mousepos);
+				if(this->type)colortPalette->setValue(this->getSliderPos());	//1 = _VALUE
+				else colortPalette->setSaturation(this->getSliderPos());
+				return 0;
+		}else{
+			return 1;
+		}
+	}
 
 	//For testing
 	void drawHitbox(){
@@ -264,9 +278,12 @@ int main(){
 	ClearBackground(raylib::Color(RAYWHITE));
 	EndTextureMode();
 
-	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
-	Slider slider = Slider((Vector2){5, 100}, (Vector2){10, 400});		//Size, Position
 
+	//Just setting up some objects required for the program
+	ColorPalette * colortPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
+	Slider valueSlider = Slider((Vector2){5, 100}, (Vector2){10, 400}, _VALUE);		//Size, Position
+	Slider saturationSlider = Slider((Vector2){5, 100}, (Vector2){30, 400}, _SATURATION);
+	
 	//Grid grid(screenWidth, screenHeight, target);
 	raylib::Color currentColor = raylib::Color(RED);
 
@@ -281,13 +298,9 @@ int main(){
 		mouse = GetMousePosition();		
 
 		if(IsMouseButtonDown(0)){
-			
-			if(CheckCollisionPointRec(mouse, slider.getHitbox())){
-			       	slider.updateSlider(mouse);
-				colortPalette->setValue(slider.getSliderPos());
-				draw = 0;	
-			}else draw = 1;
-			
+				
+			draw= (valueSlider.checkSlider(&mouse, colortPalette) && saturationSlider.checkSlider(&mouse, colortPalette));
+			//draw=saturationSlider.checkSlider(&mouse, colortPalette);
 			//std::cout << "Painettu!" << std::endl;
 		//	for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
 				//std::cout << "MORO" << std::endl;
@@ -308,37 +321,9 @@ int main(){
 			}				
 		}
 
-
-		if(IsKeyPressed(KEY_ENTER)){
-			/*for(int i = 0; i < grid.getAmount(); i++){
-				grid.getPixel(i)->setColor(raylib::Color(RAYWHITE));
-			}*/
-			BeginTextureMode(*target);
-
-			ClearBackground(raylib::Color(RAYWHITE));
-			EndTextureMode();
-					
-		}
-		if(IsKeyPressed(KEY_UP)){
-			std::cout << colortPalette -> getSaturation() << std::endl;	
-			colortPalette->setSaturation(colortPalette->getSaturation() + 0.1);	
-		}
-		if(IsKeyPressed(KEY_DOWN)){
-			std::cout << colortPalette -> getSaturation() << std::endl;	
-			colortPalette->setSaturation(colortPalette->getSaturation() - 0.1);		
-		}
-		if(IsKeyPressed(KEY_W)){
-			colortPalette->setValue(colortPalette->getValue() + 0.1);
-			std::cout << colortPalette->getValue() << std::endl;	
-		}
-		if(IsKeyPressed(KEY_S)){
-		
-			std::cout << colortPalette->getValue() << std::endl;
-			colortPalette->setValue(colortPalette->getValue() - 0.1);
-		}
 		
 		//Place for some testing prints, that need to run every frame:
-		std::cout << "Slider position function: " << slider.getSliderPos() << std::endl;
+		std::cout << "Slider position function: " << valueSlider.getSliderPos() << std::endl;
 
 		//---( Drawing ) ---
 		BeginDrawing();
@@ -349,7 +334,8 @@ int main(){
 
 		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
 		colortPalette->drawPalette();
-		slider.drawSlider();
+		valueSlider.drawSlider();
+		saturationSlider.drawSlider();
 		//slider.drawHitbox();
 
 		window.ClearBackground(RAYWHITE);
