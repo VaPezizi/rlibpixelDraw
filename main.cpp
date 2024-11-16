@@ -1,5 +1,6 @@
 #include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
 #include <iostream>
+#include <cstring>
 //(The pragma export line is just so cland stops whining about it)
 
 #define _VALUE 1
@@ -263,7 +264,10 @@ int main(){
 	int screenWidth = 800;
 	int screenHeight = 600;
 
+	std::string bufferName = "";
+
 	bool draw = 0;
+	bool savePromt = 0;
 
 	raylib::Vector2 mouse(GetMousePosition());
 
@@ -322,8 +326,15 @@ int main(){
 		}
 
 		
+		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S)){
+		//	Image image = LoadImageFromTexture(target->texture);
+		//	ImageFlipVertical(&image);
+			savePromt = 1;	
+		//	ExportImage(image, "Testi.png");
+		}
+
 		//Place for some testing prints, that need to run every frame:
-		std::cout << "Slider position function: " << valueSlider.getSliderPos() << std::endl;
+		//std::cout << "Slider position function: " << valueSlider.getSliderPos() << std::endl;
 
 		//---( Drawing ) ---
 		BeginDrawing();
@@ -337,7 +348,22 @@ int main(){
 		valueSlider.drawSlider();
 		saturationSlider.drawSlider();
 		//slider.drawHitbox();
-
+		if(savePromt){
+			char key = GetCharPressed();
+			DrawRectangle(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, RAYWHITE);
+			DrawRectangleLines(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, BLACK);
+			DrawText("Enter filename (.png added automatically): ", screenWidth / 2 - screenWidth / 10 + 5, screenHeight / 2, 10, BLACK);
+			DrawText(bufferName.c_str(), screenWidth / 2 - screenWidth / 10 + 5, screenHeight / 2 + 20, 10, BLACK);
+			if((key >= 32))bufferName += key;	
+			
+			if(IsKeyDown(KEY_ENTER)){
+				Image image = LoadImageFromTexture(target->texture);
+				ImageFlipVertical(&image);
+				bufferName.append(".png");
+				ExportImage(image, bufferName.c_str());	
+				savePromt = 0;	
+			}
+		}
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
 		DrawFPS(10, 10);
