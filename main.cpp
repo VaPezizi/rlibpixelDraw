@@ -91,7 +91,7 @@ public:
 	}
 
 	
-	void DestroyGrid(){
+	~Grid(){
 		delete[] tiles;
 	}
 	int getAmount(){
@@ -248,9 +248,9 @@ public:
 			       	this->updateSlider(*mousepos);
 				if(this->type)colortPalette->setValue(this->getSliderPos());	//1 = _VALUE
 				else colortPalette->setSaturation(this->getSliderPos());
-				return 0;
+				return 1;
 		}else{
-			return 1;
+			return 0;
 		}
 	}
 
@@ -351,11 +351,11 @@ int main(){
 
 		if(IsMouseButtonDown(0)){
 				
-			draw= (valueSlider.checkSlider(&mouse, colortPalette) && saturationSlider.checkSlider(&mouse, colortPalette));
+			draw = !(valueSlider.checkSlider(&mouse, colortPalette) || saturationSlider.checkSlider(&mouse, colortPalette));
 			//draw=saturationSlider.checkSlider(&mouse, colortPalette);
 			//std::cout << "Painettu!" << std::endl;
 		//	for(int i = 0; i < grid.getAmount();i++){	//NOTE: This code needs to be changed, as the drawing method has been completely changed
-				//std::cout << "MORO" << std::endl;
+			//std::cout << "Draw: " << draw << std::endl;	//std::cout << "MORO" << std::endl;
 			if(draw){
 		//		std::cout << "TERE" << std::endl;
 				//grid.getPixel(i)->setColor(raylib::Color(currentColor));
@@ -399,6 +399,7 @@ int main(){
 	}
 	delete(colortPalette);
 	delete(target);
+	window.Close();
 //	grid.DestroyGrid();
 	
 	return 0;
