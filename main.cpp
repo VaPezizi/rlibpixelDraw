@@ -1,6 +1,7 @@
 #include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
+#include "raylib-cpp/include/Rectangle.hpp"
 #include <iostream>
-#include <cstring>
+//#include <cstring>
 //(The pragma export line is just so cland stops whining about it)
 
 #define _VALUE 1
@@ -258,11 +259,55 @@ public:
 		this->hitbox.Draw(RED);
 	}
 };
+class SaveBox{
+private:
+	const RenderTexture2D * target;
+	raylib::Rectangle background;
+	std::string text;
+	std::string textBuffer;
+public: 
+	SaveBox(const raylib::Vector2& position, const raylib::Vector2& size, const RenderTexture2D * target){
+		this->background = raylib::Rectangle(position, size);
+		this->text = "Enter filename: ";
+		this->textBuffer = "";
+		this->target = target;
+	}
+	int DrawBox(){
+		
+		//DrawRectangle(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, RAYWHITE);
+		background.Draw(RAYWHITE);
+		background.DrawLines(BLACK);
+		//DrawRectangleLines(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, BLACK);
+		raylib::Vector2 pos = background.GetPosition();
+		raylib::Vector2 size = background.GetSize();
+		DrawText(text.c_str(), pos.GetX() + 2, pos.GetY() + size.y / 10, 10, BLACK);//screenWidth / 2 - screenWidth / 10 + 5, screenHeight / 2, 10, BLACK);
+		DrawText(textBuffer.c_str(), pos.GetX() + 2, pos.GetY() + size.y / 5, 10, BLACK);
+		
+		char key = GetCharPressed();
+		if(IsKeyPressed(KEY_BACKSPACE))textBuffer.pop_back();
+		
+		//std::cout << key << std::endl;
+		if((key >= 32))textBuffer += key;	
+		
+		if(IsKeyPressed(KEY_ENTER)){
+			return this->saveImage();
+		}
+		return 1;
+	}
+	int saveImage(){	
+		Image image = LoadImageFromTexture(target->texture);
+		ImageFlipVertical(&image);
+		textBuffer.append(".png");
+		ExportImage(image, textBuffer.c_str());
+		this->textBuffer = "";	
+		return 0;	
+	}
 
+};
 
 int main(){
-	int screenWidth = 800;
-	int screenHeight = 600;
+	const int screenWidth = 800;
+	const int screenHeight = 600;
 
 	std::string bufferName = "";
 
@@ -276,6 +321,9 @@ int main(){
 
 	raylib::RenderTexture2D * target = new raylib::RenderTexture2D();	//Allocating memory for the texture
 	*target = LoadRenderTexture(screenWidth, screenHeight);
+	
+	//Making the saver box here:
+	SaveBox saver((Vector2){screenWidth / 2.0f - screenWidth / 10.0f, screenHeight / 2.0f - screenHeight / 10.0f}, (Vector2){screenWidth / 5.0f, screenHeight / 5.0f}, target);
 
 	//Clearing texture
 	BeginTextureMode(*target);
@@ -326,11 +374,8 @@ int main(){
 		}
 
 		
-		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S)){
-		//	Image image = LoadImageFromTexture(target->texture);
-		//	ImageFlipVertical(&image);
+		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S)){		//This makes the save promt appear
 			savePromt = 1;	
-		//	ExportImage(image, "Testi.png");
 		}
 
 		//Place for some testing prints, that need to run every frame:
@@ -339,30 +384,13 @@ int main(){
 		//---( Drawing ) ---
 		BeginDrawing();
 
-		//grid.drawGrid();
-
-		//colortPalette->drawColorRect();
-
 		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
 		colortPalette->drawPalette();
 		valueSlider.drawSlider();
 		saturationSlider.drawSlider();
 		//slider.drawHitbox();
 		if(savePromt){
-			char key = GetCharPressed();
-			DrawRectangle(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, RAYWHITE);
-			DrawRectangleLines(screenWidth / 2 - screenWidth / 10, screenHeight / 2, 250, 60, BLACK);
-			DrawText("Enter filename (.png added automatically): ", screenWidth / 2 - screenWidth / 10 + 5, screenHeight / 2, 10, BLACK);
-			DrawText(bufferName.c_str(), screenWidth / 2 - screenWidth / 10 + 5, screenHeight / 2 + 20, 10, BLACK);
-			if((key >= 32))bufferName += key;	
-			
-			if(IsKeyDown(KEY_ENTER)){
-				Image image = LoadImageFromTexture(target->texture);
-				ImageFlipVertical(&image);
-				bufferName.append(".png");
-				ExportImage(image, bufferName.c_str());	
-				savePromt = 0;	
-			}
+			savePromt = saver.DrawBox();
 		}
 		window.ClearBackground(RAYWHITE);
 		//DrawText("Hello World!!", 190, 200, 20, LIGHTGRAY);
