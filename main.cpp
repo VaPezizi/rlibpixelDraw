@@ -309,6 +309,8 @@ public:
 int main(){
 	const int screenWidth = 800;
 	const int screenHeight = 600;
+	//const int screenWidth = 1280;
+	//const int screenHeight = 1024;
 
 	std::string bufferName = "";
 
@@ -410,6 +412,8 @@ int main(){
 		DrawFPS(10, 10);
 		EndDrawing();
 	}
+	target->Unload();
+	//target = NULL;
 	delete(colortPalette);
 	delete(target);
 	window.Close();
