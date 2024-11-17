@@ -1,6 +1,7 @@
 #include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
 #include "raylib-cpp/include/Rectangle.hpp"
 #include <iostream>
+#include <string>
 //#include <cstring>
 //(The pragma export line is just so cland stops whining about it)
 
@@ -207,7 +208,7 @@ protected:
 	raylib::Rectangle movingPart;
 
 public:
-	Slider(const raylib::Vector2& size, const raylib::Vector2& position, bool type){
+	Slider(const raylib::Vector2& size, const raylib::Vector2& position, const bool& type){	//
 		this->type = type;
 		this->size = size;
 		this->position = position;
@@ -314,6 +315,11 @@ int main(){
 	bool draw = 0;
 	bool savePromt = 0;
 
+	int brushSize = 10;
+	int mouseWheel = 0;
+
+	std::string fontSizeText = "Current brush size: ";
+
 	raylib::Vector2 mouse(GetMousePosition());
 
 	raylib::Window window(screenWidth, screenHeight, "Raylib++ pixel draw!");
@@ -348,6 +354,7 @@ int main(){
 		
 		//---( Updates )---
 		mouse = GetMousePosition();		
+		mouseWheel = GetMouseWheelMove();
 
 		if(IsMouseButtonDown(0)){
 				
@@ -361,7 +368,7 @@ int main(){
 				//grid.getPixel(i)->setColor(raylib::Color(currentColor));
 				//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
 				BeginTextureMode(*target);
-				DrawCircle(mouse.x, mouse.y, 10, currentColor);
+				DrawCircle(mouse.x, mouse.y, brushSize, currentColor);
 				EndTextureMode();
 			}
 			
@@ -372,8 +379,13 @@ int main(){
 				std::cout << "Mouse X: " << mouse.x << " Mouse Y: " << mouse.y << " Current color: "<< currentColor << std::endl;
 			}				
 		}
-
 		
+		if(mouseWheel != 0){
+			if(!(brushSize == 1 && mouseWheel == -1)){
+				brushSize = brushSize + mouseWheel;
+			}
+		}
+			
 		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S)){		//This makes the save promt appear
 			savePromt = 1;	
 		}
@@ -383,9 +395,10 @@ int main(){
 
 		//---( Drawing ) ---
 		BeginDrawing();
-
+		
 		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
-		colortPalette->drawPalette();
+		DrawText((fontSizeText + std::to_string(brushSize)).c_str(), screenWidth * 0.7, screenHeight * 0.05, 20, BLACK);	//TODO: Change adding the number to the string, to where brush size is updated	
+		colortPalette->drawPalette();												//Right now it's slow
 		valueSlider.drawSlider();
 		saturationSlider.drawSlider();
 		//slider.drawHitbox();
