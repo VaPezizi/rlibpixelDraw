@@ -1,5 +1,5 @@
 #include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
-#include "raylib-cpp/include/Rectangle.hpp"
+#include "raylib-cpp/include/RenderTexture.hpp"
 #include <iostream>
 #include <string>
 //#include <cstring>
@@ -330,6 +330,9 @@ int main(){
 	raylib::RenderTexture2D * target = new raylib::RenderTexture2D();	//Allocating memory for the texture
 	*target = LoadRenderTexture(screenWidth, screenHeight);
 	
+	raylib::RenderTexture2D * renderBuffer = new raylib::RenderTexture2D();
+	*renderBuffer = LoadRenderTexture(screenWidth, screenHeight);
+
 	//Making the saver box here:
 	SaveBox saver((Vector2){screenWidth / 2.0f - screenWidth / 10.0f, screenHeight / 2.0f - screenHeight / 10.0f}, (Vector2){screenWidth / 5.0f, screenHeight / 5.0f}, target);
 
@@ -358,6 +361,11 @@ int main(){
 		mouse = GetMousePosition();		
 		mouseWheel = GetMouseWheelMove();
 
+		if(IsMouseButtonPressed(0)){
+			//*renderBuffer = *target;
+			std::cout << "MORO" << std::endl;
+		}
+
 		if(IsMouseButtonDown(0)){
 				
 			draw = !(valueSlider.checkSlider(&mouse, colortPalette) || saturationSlider.checkSlider(&mouse, colortPalette));
@@ -372,6 +380,7 @@ int main(){
 				BeginTextureMode(*target);
 				DrawCircle(mouse.x, mouse.y, brushSize, currentColor);
 				EndTextureMode();
+
 			}
 			
 		}
@@ -391,6 +400,11 @@ int main(){
 		if((IsKeyDown(KEY_LEFT_CONTROL) || IsKeyDown(KEY_RIGHT_CONTROL)) && IsKeyDown(KEY_S)){		//This makes the save promt appear
 			savePromt = 1;	
 		}
+		/*if(IsKeyPressed(KEY_Z)){		//TODO: Make this work
+			*target = RenderTexture(*renderBuffer);	
+			//target->texture = renderBuffer->texture;
+			std::cout << "MORO2" << std::endl;
+		}*/
 
 		//Place for some testing prints, that need to run every frame:
 		//std::cout << "Slider position function: " << valueSlider.getSliderPos() << std::endl;
@@ -416,6 +430,7 @@ int main(){
 	//target = NULL;
 	delete(colortPalette);
 	delete(target);
+	delete(renderBuffer);
 	window.Close();
 //	grid.DestroyGrid();
 	
