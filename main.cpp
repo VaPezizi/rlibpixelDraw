@@ -2,7 +2,6 @@
 #include "raylib-cpp/include/RenderTexture.hpp"
 #include <iostream>
 #include <string>
-//#include <cstring>
 //(The pragma export line is just so cland stops whining about it)
 
 #define _VALUE 1
@@ -320,7 +319,8 @@ int main(){
 	int brushSize = 10;
 	int mouseWheel = 0;
 
-	std::string fontSizeText = "Current brush size: ";
+	std::string fontSizeText =  "Current brush size: ";
+	fontSizeText.append(std::to_string(brushSize));
 
 	raylib::Vector2 mouse(GetMousePosition());
 
@@ -393,7 +393,9 @@ int main(){
 		
 		if(mouseWheel != 0){
 			if(!(brushSize == 1 && mouseWheel == -1)){
-				brushSize = brushSize + mouseWheel;
+				brushSize = brushSize + mouseWheel;	
+				fontSizeText = "Current brush size: ";
+				fontSizeText.append(std::to_string(brushSize));
 			}
 		}
 			
@@ -413,7 +415,7 @@ int main(){
 		BeginDrawing();
 		
 		DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
-		DrawText((fontSizeText + std::to_string(brushSize)).c_str(), screenWidth * 0.7, screenHeight * 0.05, 20, BLACK);	//TODO: Change adding the number to the string, to where brush size is updated	
+		DrawText(fontSizeText.c_str(), screenWidth * 0.7, screenHeight * 0.05, 20, BLACK);	//TODO: Change adding the number to the string, to where brush size is updated	
 		colortPalette->drawPalette();												//Right now it's slow
 		valueSlider.drawSlider();
 		saturationSlider.drawSlider();
@@ -427,6 +429,7 @@ int main(){
 		EndDrawing();
 	}
 	target->Unload();
+	renderBuffer->Unload();
 	//target = NULL;
 	delete(colortPalette);
 	delete(target);
