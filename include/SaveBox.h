@@ -4,8 +4,6 @@
 #include <string>
 #endif
 
-#ifndef _SAVEBOX
-#define _SAVEBOX
 class SaveBox{
 private: 
 	const raylib::RenderTexture2D * target;
@@ -18,4 +16,3 @@ public:
 	int saveImage();
 
 };
-#endif

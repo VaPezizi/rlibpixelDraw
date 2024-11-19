@@ -2,10 +2,6 @@
 #define _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"
 #endif
-
-#ifndef _COLORPALETTE
-#define _COLORPALETTE
-
 class ColorPalette{
 protected:
 	raylib::Rectangle rectangle;
@@ -26,4 +22,3 @@ public:
 
 };
 
-#endif

@@ -5,9 +5,19 @@
 #include "../raylib-cpp/include/RenderTexture.hpp"
 #include <iostream>
 #include <string>
+
+#ifndef _SAVEBOX
+#define _SAVEBOX 
 #include "SaveBox.h"
+#endif
+#ifndef _COLORPALETTE
 #include "ColorPalette.h"
+#define _COLORPALETTE
+#endif 
+#ifndef _SLIDER
+#define _SLIDER 
 #include "Slider.h"
+#endif
 //(The pragma export line is just so cland stops whining about it)
 
 #define _VALUE 1
