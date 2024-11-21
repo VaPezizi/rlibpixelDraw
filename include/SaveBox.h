@@ -6,12 +6,12 @@
 
 class SaveBox{
 private: 
-	const raylib::RenderTexture2D * target;
+	raylib::RenderTexture2D * target;
 	raylib::Rectangle background;
 	std::string text;
 	std::string textBuffer;
 public: 
-	SaveBox(const raylib::Vector2& position, const raylib::Vector2& size, const RenderTexture2D * target);
+	SaveBox(const raylib::Vector2& position, const raylib::Vector2& size, raylib::RenderTexture2D * target);
 	int DrawBox();
 	int saveImage();
 

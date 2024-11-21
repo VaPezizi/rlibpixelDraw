@@ -1,6 +1,7 @@
 #ifndef _RLIB
 #define _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
+//#include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
 #endif
 #include "../raylib-cpp/include/RenderTexture.hpp"
 #include <iostream>
