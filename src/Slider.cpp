@@ -93,7 +93,7 @@ Slider::Slider(const raylib::Vector2& size, const raylib::Vector2& position, con
 }
 void Slider::drawSlider(){
 	this->slider.Draw(raylib::BLACK);
-	this->movingPart.Draw(raylib::LIGHTGRAY);
+	this->movingPart.DrawRounded(0.5f, 0.0f, raylib::LIGHTGRAY);
 }
 void Slider::updateSlider(raylib::Vector2& mousepos){
 	float temp = getSliderPos();

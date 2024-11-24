@@ -2,7 +2,9 @@
 #define _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"	//IWYU pragma: export
 #include <string>
+#include <iostream>
 #endif
+
 
 #ifndef _SAVEBOX
 #define _SAVEBOX
@@ -51,7 +53,50 @@ private:
 public:
 
 	//Constructor and destructor
-	
+		
+	Game(const int& screenWidth, const int& screenHeight, const int& FPS, char* file){
+		this->screenWidth = screenWidth;
+		this->screenHeight = screenHeight;
+		SetTargetFPS(FPS);
+		
+		this->draw = 0;
+		this->savePromt = 0;
+
+		this->brushSize = 10;
+		this->mouseWheel = 0;
+
+		this->fontSizeText = "Current brush size: ";
+		fontSizeText.append(std::to_string(brushSize));
+
+		this->mouse = GetMousePosition();
+		//this->window = raylib::Window(screenWidth, screenHeight, "Raylib++ pixel draw!");
+		window.Init(screenWidth, screenHeight, "Raylib++ pixel draw!");
+
+		Image image = LoadImage(file);
+		ImageFlipVertical(&image);
+		Texture2D texture = LoadTextureFromImage(image);
+		UnloadImage(image);
+
+		this->target = new raylib::RenderTexture2D();
+		*target = LoadRenderTexture(screenWidth, screenHeight);
+		target->SetTexture(texture);
+
+		this->renderBuffer = new raylib::RenderTexture2D(LoadRenderTexture(screenWidth, screenHeight));
+		*renderBuffer = LoadRenderTexture(screenWidth, screenHeight);
+
+		this->saver = SaveBox((Vector2){screenWidth / 2.0f - screenWidth / 10.0f, screenHeight / 2.0f - screenHeight / 10.0f}, (Vector2){screenWidth / 5.0f, screenHeight / 5.0f}, target);
+		
+		BeginTextureMode(*target);		//Making the texture just a white background
+		ClearBackground(raylib::Color(RAYWHITE));
+		EndTextureMode();
+
+		this->colorPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
+
+		this->valueSlider = Slider((Vector2){5, 100}, (Vector2){10, 400}, _VALUE_SLIDER);		//Size, Position
+		this->saturationSlider = Slider((Vector2){5, 100}, (Vector2){30, 400}, _SATURATION_SLIDER);
+
+		this->currentColor = raylib::Color(RED);
+	}
 	Game(const int& screenWidth, const int& screenHeight, const int& FPS){
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;

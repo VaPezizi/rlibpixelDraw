@@ -1,14 +1,15 @@
+/*
 #ifndef _RLIB
 #define _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
 //#include "./raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
 #endif
-
+*/
 #ifndef _GAME
 #define _GAME
 #include "Game.h"
 #endif
-
+/*
 #ifndef _SAVEBOX
 #define _SAVEBOX 
 #include "SaveBox.h"
@@ -22,10 +23,17 @@
 #include "Slider.h"
 #endif
 //(The pragma export line is just so cland stops whining about it)
-
-int main(){
-	Game game = Game(800, 600, 240);
-	game.runMainLoop();
+*/
+int main(int argc, char * argv[]){
+	if(argc > 1){
+		Game game = Game(800, 600, 240, argv[1]);
+		game.runMainLoop();	
+	}
+	else{
+		Game game = Game(800, 600, 240);
+		game.runMainLoop();
+	}
+	
 	
 	return 0;
 }
