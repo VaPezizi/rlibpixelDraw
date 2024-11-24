@@ -18,6 +18,7 @@ protected:
 	raylib::Rectangle slider;
 	raylib::Rectangle movingPart;
 public:
+	Slider();
 	Slider(const raylib::Vector2& size, const raylib::Vector2& position, const bool& type);
 	void drawSlider();
 	void updateSlider(raylib::Vector2& mousepos);

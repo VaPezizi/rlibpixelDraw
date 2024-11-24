@@ -50,6 +50,7 @@ public:
 
 };
 */
+SaveBox::SaveBox(){}
 
 SaveBox::SaveBox(const raylib::Vector2& position, const raylib::Vector2& size, raylib::RenderTexture2D * target){
 	this->background = raylib::Rectangle(position, size);

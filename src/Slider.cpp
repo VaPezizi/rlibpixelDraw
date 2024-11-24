@@ -1,17 +1,18 @@
 #ifndef _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"	// IWYU pragma: export
-#include <raylib.h>
+//#include <raylib.h>
 #define _RLIB
 #endif
 
-#ifndef _COLORPALETTE
-#define _COLORPALETTE
-#include "ColorPalette.h"
-#endif
+//#ifndef _COLORPALETTE
+//#define _COLORPALETTE
+//#include "ColorPalette.h"
+//#endif
 
 #ifndef _SLIDER
 #define _SLIDER
 #include "Slider.h"
+#endif
 /*class Slider{
 protected:
 	bool type;
@@ -76,6 +77,10 @@ public:
 	}
 };
 */
+Slider::Slider(){
+
+}
+
 
 Slider::Slider(const raylib::Vector2& size, const raylib::Vector2& position, const bool& type){	//
 	this->type = type;
@@ -129,4 +134,3 @@ void Slider::drawHitbox(){
 	this->hitbox.Draw(RED);
 }
 
-#endif
