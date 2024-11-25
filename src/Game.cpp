@@ -26,7 +26,6 @@ void Game::checkUpdates(){
 			//grid.getPixel(i)->setColor(raylib::Color(currentColor));
 			//std::cout << "Pos X: "<< mouse.x << " , Pos Y: " << mouse.y << std::endl;	
 			BeginTextureMode(*target);
-			std::cout << "Moro Samuli!" << std::endl;
 			DrawCircle(mouse.x, mouse.y, brushSize, currentColor);
 			EndTextureMode();
 
