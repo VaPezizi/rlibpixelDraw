@@ -2,7 +2,6 @@
 #define _RLIB
 #include "../raylib-cpp/include/raylib-cpp.hpp"	//IWYU pragma: export
 #include <string>
-#include <iostream>
 #endif
 
 
@@ -79,16 +78,20 @@ public:
 
 		this->target = new raylib::RenderTexture2D();
 		*target = LoadRenderTexture(screenWidth, screenHeight);
-		target->SetTexture(texture);
+		
+		BeginTextureMode(*target);		//Making the texture just a white background
+		ClearBackground(raylib::Color(RAYWHITE));
+		DrawTextureRec(texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);
+		EndTextureMode();
+		UnloadTexture(texture);
+		
 
 		this->renderBuffer = new raylib::RenderTexture2D(LoadRenderTexture(screenWidth, screenHeight));
 		*renderBuffer = LoadRenderTexture(screenWidth, screenHeight);
 
 		this->saver = SaveBox((Vector2){screenWidth / 2.0f - screenWidth / 10.0f, screenHeight / 2.0f - screenHeight / 10.0f}, (Vector2){screenWidth / 5.0f, screenHeight / 5.0f}, target);
 		
-		BeginTextureMode(*target);		//Making the texture just a white background
-		ClearBackground(raylib::Color(RAYWHITE));
-		EndTextureMode();
+		
 
 		this->colorPalette = new ColorPalette(raylib::Vector2(10, 10), raylib::Vector2(50, 360));
 
