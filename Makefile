@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Iinclude -lraylib
+CXXFLAGS = -Wall -Iinclude -lraylib 
 SRCDIR = src
 OBJDIR = build
 TARGET = main
@@ -10,10 +10,10 @@ OBJECTS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SOURCES))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) $(CXXFLAGS) -g -o $@
+	$(CXX) $(OBJECTS) $(CXXFLAGS) -g -o $@ 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CXX) $(CXXFLAGS) -c $< -g -o $@
+	$(CXX) -c $< $(CXXFLAGS) -g -o $@ 
 
 
 $(OBJDIR):

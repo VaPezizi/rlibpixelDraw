@@ -62,12 +62,15 @@ void Game::checkUpdates(){
 }
 void Game::drawGame(){
 	BeginDrawing();
-		
+	
+
 	DrawTextureRec(target->texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);	
 	DrawText(fontSizeText.c_str(), screenWidth * 0.7, screenHeight * 0.05, 20, BLACK);	//TODO: Change adding the number to the string, to where brush size is updated	
 	colorPalette->drawPalette();												//Right now it's slow
 	valueSlider.drawSlider();
 	saturationSlider.drawSlider();
+
+	this->toolSelector.Draw();	
 	//slider.drawHitbox();
 	if(savePromt){
 		savePromt = saver.DrawBox();

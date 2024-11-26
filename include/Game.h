@@ -4,6 +4,10 @@
 #include <string>
 #endif
 
+#ifndef _IOSTREAM
+#define _IOSTREAM
+#include <iostream>
+#endif
 
 #ifndef _SAVEBOX
 #define _SAVEBOX
@@ -18,6 +22,11 @@
 #ifndef _SLIDER
 #define _SLIDER
 #include "Slider.h"
+#endif
+
+#ifndef _TOOLSELECTOR
+#define _TOOLSELECTOR
+#include "ToolSelector.h"
 #endif
 
 #define _VALUE_SLIDER 1		//These mark the type of sliders
@@ -46,6 +55,8 @@ private:
 	SaveBox saver;
 	ColorPalette * colorPalette;
 
+	ToolSelector toolSelector;
+
 	Slider valueSlider;
 	Slider saturationSlider;
 	raylib::Color currentColor;
@@ -53,11 +64,11 @@ public:
 
 	//Constructor and destructor
 		
-	Game(const int& screenWidth, const int& screenHeight, const int& FPS, char* file){
+	Game(const int& screenWidth, const int& screenHeight, const int& FPS, char* file) : toolSelector((Vector2){500, 500}){
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetTargetFPS(FPS);
-		
+
 		this->draw = 0;
 		this->savePromt = 0;
 
@@ -71,21 +82,31 @@ public:
 		//this->window = raylib::Window(screenWidth, screenHeight, "Raylib++ pixel draw!");
 		window.Init(screenWidth, screenHeight, "Raylib++ pixel draw!");
 
-		Image image = LoadImage(file);
-		ImageFlipVertical(&image);
-		Texture2D texture = LoadTextureFromImage(image);
-		UnloadImage(image);
+		Image image = LoadImage(file);	//Loading image, by name
+		if(image.data != 0){ 	
+			ImageFlipVertical(&image);
+			Texture2D texture = LoadTextureFromImage(image);
 
-		this->target = new raylib::RenderTexture2D();
-		*target = LoadRenderTexture(screenWidth, screenHeight);
-		
-		BeginTextureMode(*target);		//Making the texture just a white background
-		ClearBackground(raylib::Color(RAYWHITE));
-		DrawTextureRec(texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);
-		EndTextureMode();
-		UnloadTexture(texture);
-		
+			UnloadImage(image);
 
+			this->target = new raylib::RenderTexture2D();
+			*target = LoadRenderTexture(screenWidth, screenHeight);
+			
+			BeginTextureMode(*target);		
+			ClearBackground(raylib::Color(RAYWHITE));
+			DrawTextureRec(texture, (Rectangle){0, 0, (float)target->texture.width, (float) -target->texture.height}, (Vector2){0, 0}, WHITE);
+			EndTextureMode();
+			UnloadTexture(texture);
+		}else{
+				
+			this->target = new raylib::RenderTexture2D();
+			*target = LoadRenderTexture(screenWidth, screenHeight);
+			
+			BeginTextureMode(*target);		
+			ClearBackground(raylib::Color(RAYWHITE));
+			EndTextureMode();
+		
+		}
 		this->renderBuffer = new raylib::RenderTexture2D(LoadRenderTexture(screenWidth, screenHeight));
 		*renderBuffer = LoadRenderTexture(screenWidth, screenHeight);
 
@@ -100,7 +121,7 @@ public:
 
 		this->currentColor = raylib::Color(RED);
 	}
-	Game(const int& screenWidth, const int& screenHeight, const int& FPS){
+	Game(const int& screenWidth, const int& screenHeight, const int& FPS) : toolSelector((Vector2){500, 500}){
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetTargetFPS(FPS);
@@ -110,6 +131,8 @@ public:
 
 		this->brushSize = 10;
 		this->mouseWheel = 0;
+
+
 
 		this->fontSizeText = "Current brush size: ";
 		fontSizeText.append(std::to_string(brushSize));
