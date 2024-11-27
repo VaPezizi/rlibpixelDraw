@@ -64,8 +64,10 @@ public:
 
 	//Constructor and destructor
 		
-	Game(const int& screenWidth, const int& screenHeight, const int& FPS, char* file) : toolSelector((Vector2){500, 500}){
-		this->screenWidth = screenWidth;
+	Game(const int& screenWidth, const int& screenHeight, const int& FPS, char* file)
+	   : toolSelector((Vector2){(float)(screenWidth * 0.9), (float) screenHeight / 10}){
+	
+         	this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetTargetFPS(FPS);
 
@@ -121,7 +123,8 @@ public:
 
 		this->currentColor = raylib::Color(RED);
 	}
-	Game(const int& screenWidth, const int& screenHeight, const int& FPS) : toolSelector((Vector2){500, 500}){
+	Game(const int& screenWidth, const int& screenHeight, const int& FPS) 
+	   : toolSelector((Vector2){(float)(screenWidth * 0.9), (float) screenHeight / 10}){
 		this->screenWidth = screenWidth;
 		this->screenHeight = screenHeight;
 		SetTargetFPS(FPS);

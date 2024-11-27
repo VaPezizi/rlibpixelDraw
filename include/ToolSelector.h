@@ -15,7 +15,7 @@ private:
 public: 
 	ToolSelector(const raylib::Vector2& position){
 		this->position = position;
-		this->mainRectangle = raylib::Rectangle(position, (Vector2) {30, 30});
+		this->mainRectangle = raylib::Rectangle(position, (Vector2) {30, 100});
 
 	}
 	void Draw();
