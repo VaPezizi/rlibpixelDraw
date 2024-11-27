@@ -123,6 +123,9 @@ public:
 
 		this->currentColor = raylib::Color(RED);
 	}
+
+	//I know the way i do this, is really stupid, but i'll change the initialitions to their own functions later
+
 	Game(const int& screenWidth, const int& screenHeight, const int& FPS) 
 	   : toolSelector((Vector2){(float)(screenWidth * 0.9), (float) screenHeight / 10}){
 		this->screenWidth = screenWidth;
